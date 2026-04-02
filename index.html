@@ -8,7 +8,6 @@
 <style>
 * { box-sizing: border-box; margin:0; padding:0; font-family: Arial,sans-serif; user-select: none; }
 
-/* ✅ FIXED CURSOR */
 body {
     width:100vw;
     height:100vh;
@@ -21,65 +20,63 @@ body {
 
 .icon {
     width: 90px; text-align:center; color:white; position:absolute;
-    cursor: grab; padding:10px; border-radius:12px; transition: background 0.15s;
+    cursor: grab; padding:10px; border-radius:12px;
 }
 .icon:hover { background: rgba(255,255,255,0.12); }
-.icon img { width:48px;height:48px;object-fit:cover;border-radius:12px;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.25);}
-.icon span { display:block;margin-top:6px;font-size:13px;word-wrap: break-word;text-shadow:0 0 6px rgba(0,0,0,0.8);pointer-events:none;}
 
-#taskbar { position: fixed; bottom:0; left:0; width:100%; height:52px; background:rgba(15,15,15,0.82); backdrop-filter:blur(12px); display:flex; align-items:center; gap:10px; padding:0 10px; z-index:99999; border-top:1px solid rgba(255,255,255,0.08);}
-.taskbar-btn { background: rgba(255,255,255,0.1); border:none; color:white; padding:10px 14px; border-radius:12px; cursor:pointer; font-size:14px; transition:0.15s;}
-.taskbar-btn:hover { background: rgba(255,255,255,0.18);}
-#clock { margin-left:auto; color:white; font-size:14px; padding-right:10px;}
+#taskbar {
+    position: fixed; bottom:0; width:100%; height:52px;
+    background:rgba(15,15,15,0.82);
+    display:flex; align-items:center; gap:10px; padding:0 10px;
+}
 
-/* ✅ RESIZABLE WINDOWS */
+.taskbar-btn { background: rgba(255,255,255,0.1); border:none; color:white; padding:10px; border-radius:12px; cursor:pointer; }
+
+#clock { margin-left:auto; color:white; }
+
+/* WINDOW */
 .window {
     position:absolute;
     width:750px;
     height:500px;
-    background:rgba(24,24,24,0.97);
-    border:1px solid rgba(255,255,255,0.08);
+    background:#181818;
     border-radius:18px;
-    box-shadow:0 18px 50px rgba(0,0,0,0.45);
-    z-index:100;
-
-    resize: both;
-    overflow: hidden;
-
+    overflow:hidden;
     min-width:320px;
     min-height:220px;
 }
 
-.titlebar { height:42px;background:rgba(255,255,255,0.07); display:flex;align-items:center;justify-content:space-between; padding:0 12px; color:white; cursor:move; border-bottom:1px solid rgba(255,255,255,0.06);}
-.titlebar span{font-size:14px;font-weight:bold;}
-.window-controls { display:flex; gap:8px; }
-.window-controls button { width:28px;height:28px;border:none;border-radius:10px;cursor:pointer;color:white;background:rgba(255,255,255,0.1); transition:0.15s;}
-.window-controls button:hover { background: rgba(255,255,255,0.18); }
-
-.window-content { width:100%;height:calc(100% - 42px);background:#111;color:white;overflow:auto;padding:16px; }
-
-/* ✅ iframe resize fix */
-iframe {
-    width:100%;
-    height:100%;
-    border:none;
-    background:white;
-    border-radius:0 0 18px 18px;
-    display:block;
+.titlebar {
+    height:42px;
+    background:#222;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 12px;
+    cursor:move;
+    color:white;
 }
 
-.store-section { display:flex; flex-direction:column; gap:12px; max-width:560px;}
-.store-section h2 { font-size:28px; }
-.app-list { margin-top:16px; display:flex; flex-direction:column; gap:10px;}
-.app-card { background:#1b1b1b;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;color:white;border:1px solid rgba(255,255,255,0.05);}
-.app-card-left { display:flex;align-items:center;gap:12px; max-width:75%; }
-.app-card-left img { width:42px;height:42px;border-radius:10px;object-fit:cover; }
-.small-btn { background:crimson;border:none;color:white;padding:8px 12px;border-radius:10px;cursor:pointer;transition:0.15s; }
-.small-btn:hover { opacity:0.9; }
+.window-content {
+    height:calc(100% - 42px);
+    background:#111;
+    color:white;
+}
 
-textarea.notes-area { width:100%; height:100%; background:#111;color:white;border:none;resize:none;padding:12px;font-size:15px;outline:none; }
-.welcome-box { line-height:1.9; }
-.welcome-box h2 { margin-bottom:8px; }
+/* RESIZE HANDLES */
+.resize-handle { position:absolute; }
+
+.resize-right { right:0; top:0; width:6px; height:100%; cursor: ew-resize; }
+.resize-left { left:0; top:0; width:6px; height:100%; cursor: ew-resize; }
+.resize-bottom { bottom:0; left:0; width:100%; height:6px; cursor: ns-resize; }
+.resize-top { top:0; left:0; width:100%; height:6px; cursor: ns-resize; }
+
+.resize-br { right:0; bottom:0; width:12px; height:12px; cursor: nwse-resize; }
+.resize-bl { left:0; bottom:0; width:12px; height:12px; cursor: nesw-resize; }
+.resize-tr { right:0; top:0; width:12px; height:12px; cursor: nesw-resize; }
+.resize-tl { left:0; top:0; width:12px; height:12px; cursor: nwse-resize; }
+
+iframe { width:100%; height:100%; border:none; background:white; }
 </style>
 </head>
 
@@ -88,266 +85,147 @@ textarea.notes-area { width:100%; height:100%; background:#111;color:white;borde
 <div id="desktop"></div>
 
 <div id="taskbar">
-    <button class="taskbar-btn" onclick="openStore()">🍿 Popcorn Store</button>
-    <button class="taskbar-btn" onclick="openNotes()">📝 Kernel Notes</button>
-    <button class="taskbar-btn" onclick="resetSetup()">⚙️ Setup</button>
+    <button class="taskbar-btn" onclick="openStore()">🍿 Store</button>
+    <button class="taskbar-btn" onclick="openNotes()">📝 Notes</button>
     <div id="clock"></div>
 </div>
 
 <script>
-const settings = JSON.parse(localStorage.getItem("popcornos_settings") || "{}");
-if(!settings.setupDone){ window.location.href="setup.html"; }
-
-let zIndexCounter = 100;
 const desktop = document.getElementById("desktop");
+let zIndexCounter = 100;
 
-const defaultApps = [
-    { id:"store", name:"Popcorn Store", icon:"https://cdn-icons-png.flaticon.com/512/891/891462.png", type:"system", x:20, y:20 },
-    { id:"notes", name:"Kernel Notes", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828919.png", type:"system", x:20, y:130 }
-];
-
-const preloadedApps = [
-    { id:"gn-math", name:"GN-Math", url:"https://ubpro.vercel.app/https:/gn-math.dev", icon:"https://cdn-icons-png.flaticon.com/512/1040/1040257.png" },
-    { id:"archix-ubg", name:"Archix-UBG", url:"https://ubpro.vercel.app/https:/archix-ubg.github.io/archixubg-site/", icon:"https://cdn-icons-png.flaticon.com/512/1051/1051279.png" },
-    { id:"indexmath-v2", name:"Indexmath-v2", url:"https://indexmath-v2.netlify.app", icon:"https://cdn-icons-png.flaticon.com/512/1051/1051266.png" },
-    { id:"breakium", name:"Breakium", url:"https://breakium.netlify.app", icon:"https://cdn-icons-png.flaticon.com/512/1052/1052100.png" },
-    { id:"fyinx", name:"Fyinx", url:"https://ubpro.vercel.app/https:/fyinx.wtf/", icon:"https://cdn-icons-png.flaticon.com/512/1053/1053021.png" }
-];
-
-window.addEventListener("DOMContentLoaded", ()=>{
-    renderDesktopIcons();
-    updateClock();
-    setInterval(updateClock,1000);
-    setTimeout(openWelcomeWindow,450);
-});
-
-function updateClock(){
-    const clock=document.getElementById("clock");
+/* CLOCK */
+setInterval(()=>{
     const now=new Date();
-    let h=now.getHours(), m=now.getMinutes().toString().padStart(2,"0"), ampm=h>=12?"PM":"AM";
-    h=h%12||12;
-    clock.textContent=`${h}:${m} ${ampm}`;
-}
+    document.getElementById("clock").textContent =
+        now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+},1000);
 
-function getInstalledApps(){ return JSON.parse(localStorage.getItem("popcornos_apps")||"[]"); }
-function saveInstalledApps(apps){ localStorage.setItem("popcornos_apps",JSON.stringify(apps)); }
-function getIconPositions(){ return JSON.parse(localStorage.getItem("popcornos_positions")||"{}"); }
-function saveIconPosition(id,x,y){ const positions=getIconPositions(); positions[id]={x,y}; localStorage.setItem("popcornos_positions",JSON.stringify(positions)); }
-function getAllApps(){ return [...defaultApps, ...getInstalledApps()]; }
+/* ICONS */
+const apps = [
+    {id:"store", name:"Store", x:20, y:20},
+    {id:"notes", name:"Notes", x:20, y:120}
+];
 
-function renderDesktopIcons(){
+function renderIcons(){
     desktop.innerHTML="";
-    const positions=getIconPositions();
-    const apps=getAllApps();
-
-    apps.forEach((app,index)=>{
+    apps.forEach(app=>{
         const icon=document.createElement("div");
         icon.className="icon";
-        icon.dataset.id=app.id;
-
-        const savedPos=positions[app.id];
-        icon.style.left=(savedPos?.x??app.x??20)+"px";
-        icon.style.top=(savedPos?.y??app.y??(20+index*110))+"px";
-
-        icon.innerHTML=`<img src="${app.icon}" alt=""><span>${app.name}</span>`;
+        icon.style.left=app.x+"px";
+        icon.style.top=app.y+"px";
+        icon.innerHTML=app.name;
 
         icon.ondblclick=()=>{
             if(app.id==="store") openStore();
-            else if(app.id==="notes") openNotes();
-            else openAppWindow(app);
+            if(app.id==="notes") openNotes();
         };
 
-        makeDraggableIcon(icon,app.id);
         desktop.appendChild(icon);
     });
 }
+renderIcons();
 
-function makeDraggableIcon(el,appId){
-    const gridSize=100;
-    let offsetX=0, offsetY=0, dragging=false;
-
-    el.addEventListener("mousedown",(e)=>{
-        dragging=true;
-        offsetX=e.clientX-el.offsetLeft;
-        offsetY=e.clientY-el.offsetTop;
-        el.style.zIndex=++zIndexCounter;
-    });
-
-    document.addEventListener("mousemove",(e)=>{
-        if(!dragging) return;
-        let x=e.clientX-offsetX, y=e.clientY-offsetY;
-        x=Math.max(0,Math.min(window.innerWidth-95,x));
-        y=Math.max(0,Math.min(window.innerHeight-155,y));
-        el.style.left=x+"px";
-        el.style.top=y+"px";
-    });
-
-    document.addEventListener("mouseup",()=>{
-        if(dragging){
-            let snappedX=Math.round(parseInt(el.style.left)/gridSize)*gridSize;
-            let snappedY=Math.round(parseInt(el.style.top)/gridSize)*gridSize;
-            el.style.left=snappedX+"px";
-            el.style.top=snappedY+"px";
-            saveIconPosition(appId,snappedX,snappedY);
-        }
-        dragging=false;
-    });
-}
-
-function createWindow(title,contentHTML,width=750,height=500,isIframe=false){
+/* WINDOW */
+function createWindow(title, content){
     const win=document.createElement("div");
     win.className="window";
-
-    win.style.width=width+"px";
-    win.style.height=height+"px";
-    win.style.left=Math.random()*180+140+"px";
-    win.style.top=Math.random()*100+70+"px";
+    win.style.left="200px";
+    win.style.top="120px";
     win.style.zIndex=++zIndexCounter;
 
     win.innerHTML=`
-        <div class="titlebar">
-            <span>${title}</span>
-            <div class="window-controls">
-                <button class="close-btn">✕</button>
-            </div>
-        </div>
-        <div class="window-content">${contentHTML}</div>
+    <div class="titlebar">${title}<button onclick="this.closest('.window').remove()">✕</button></div>
+    <div class="window-content">${content}</div>
+
+    <div class="resize-handle resize-right"></div>
+    <div class="resize-handle resize-left"></div>
+    <div class="resize-handle resize-bottom"></div>
+    <div class="resize-handle resize-top"></div>
+    <div class="resize-handle resize-br"></div>
+    <div class="resize-handle resize-bl"></div>
+    <div class="resize-handle resize-tr"></div>
+    <div class="resize-handle resize-tl"></div>
     `;
 
     desktop.appendChild(win);
-    makeWindowDraggable(win);
-
-    win.querySelector(".close-btn").onclick=()=>win.remove();
-
-    win.addEventListener("mousedown",()=>{
-        win.style.zIndex=++zIndexCounter;
-    });
-
-    if(isIframe){
-        const content=win.querySelector(".window-content");
-        content.style.padding="0";
-        content.style.overflow="hidden";
-    }
-
-    return win;
+    makeDraggable(win);
+    makeResizable(win);
 }
 
-function makeWindowDraggable(win){
-    const titlebar=win.querySelector(".titlebar");
-    let dragging=false, offsetX=0, offsetY=0;
+/* DRAG */
+function makeDraggable(win){
+    const bar=win.querySelector(".titlebar");
+    let dragging=false, ox, oy;
 
-    titlebar.addEventListener("mousedown",(e)=>{
+    bar.onmousedown=e=>{
         dragging=true;
-        offsetX=e.clientX-win.offsetLeft;
-        offsetY=e.clientY-win.offsetTop;
-        win.style.zIndex=++zIndexCounter;
-    });
+        ox=e.clientX-win.offsetLeft;
+        oy=e.clientY-win.offsetTop;
+    };
 
-    document.addEventListener("mousemove",(e)=>{
+    document.onmousemove=e=>{
         if(!dragging) return;
-        let x=e.clientX-offsetX, y=e.clientY-offsetY;
-        x=Math.max(0, Math.min(window.innerWidth-win.offsetWidth, x));
-        y=Math.max(0, Math.min(window.innerHeight-52-win.offsetHeight, y));
-        win.style.left=x+"px";
-        win.style.top=y+"px";
-    });
+        win.style.left=(e.clientX-ox)+"px";
+        win.style.top=(e.clientY-oy)+"px";
+    };
 
-    document.addEventListener("mouseup",()=> dragging=false);
+    document.onmouseup=()=>dragging=false;
 }
 
-function openStore(){
-    const storeHTML=`<div class="store-section"><h2>Install Preloaded Apps</h2><div class="app-list" id="preloadedAppsList"></div></div>`;
-    createWindow("Popcorn Store",storeHTML,680,560);
-    setTimeout(renderPreloadedAppsList,50);
-}
+/* RESIZE */
+function makeResizable(win){
+    const handles=win.querySelectorAll(".resize-handle");
 
-function renderPreloadedAppsList(){
-    const list=document.getElementById("preloadedAppsList");
-    if(!list) return;
+    handles.forEach(h=>{
+        h.onmousedown=e=>{
+            e.stopPropagation();
 
-    list.innerHTML="";
-    const installed=getInstalledApps().map(a=>a.id);
+            let startX=e.clientX;
+            let startY=e.clientY;
+            let w=win.offsetWidth;
+            let hgt=win.offsetHeight;
+            let l=win.offsetLeft;
+            let t=win.offsetTop;
 
-    preloadedApps.forEach(app=>{
-        const card=document.createElement("div");
-        card.className="app-card";
+            function move(e){
+                let dx=e.clientX-startX;
+                let dy=e.clientY-startY;
 
-        const isInstalled=installed.includes(app.id);
+                if(h.classList.contains("resize-right")) win.style.width=w+dx+"px";
+                if(h.classList.contains("resize-bottom")) win.style.height=hgt+dy+"px";
 
-        card.innerHTML=`
-        <div class="app-card-left">
-            <img src="${app.icon}" alt="">
-            <div>
-                <div><strong>${app.name}</strong></div>
-                <div style="word-break: break-all;">${app.url}</div>
-            </div>
-        </div>
-        <button class="small-btn" ${isInstalled?"disabled":""}
-        onclick="installPreloadedApp('${app.id}')">
-        ${isInstalled?"Installed":"Install"}
-        </button>
-        `;
+                if(h.classList.contains("resize-left")){
+                    win.style.width=w-dx+"px";
+                    win.style.left=l+dx+"px";
+                }
 
-        list.appendChild(card);
-    });
-}
+                if(h.classList.contains("resize-top")){
+                    win.style.height=hgt-dy+"px";
+                    win.style.top=t+dy+"px";
+                }
 
-function installPreloadedApp(id){
-    const app=preloadedApps.find(a=>a.id===id);
-    if(!app) return;
+                if(h.classList.contains("resize-br")){
+                    win.style.width=w+dx+"px";
+                    win.style.height=hgt+dy+"px";
+                }
+            }
 
-    const apps=getInstalledApps();
-
-    if(!apps.some(a=>a.id===app.id)){
-        const newApp={
-            ...app,
-            x:140+Math.floor(Math.random()*200),
-            y:30+Math.floor(Math.random()*200)
+            document.addEventListener("mousemove",move);
+            document.addEventListener("mouseup",()=>{
+                document.removeEventListener("mousemove",move);
+            },{once:true});
         };
-
-        apps.push(newApp);
-        saveInstalledApps(apps);
-        renderDesktopIcons();
-        renderPreloadedAppsList();
-    }
+    });
 }
 
-function openAppWindow(app){
-    createWindow(app.name, `<iframe src="${app.url}" allowfullscreen></iframe>`, 980, 650, true);
+/* APPS */
+function openStore(){
+    createWindow("Store","App store coming soon");
 }
 
 function openNotes(){
-    const notes=localStorage.getItem("popcornos_notes")||"";
-
-    const notesHTML=`<textarea id="notesArea" class="notes-area">${notes}</textarea>`;
-
-    createWindow("Kernel Notes",notesHTML,700,500);
-
-    setTimeout(()=>{
-        const area=document.getElementById("notesArea");
-        if(area){
-            area.addEventListener("input",()=>{
-                localStorage.setItem("popcornos_notes",area.value);
-            });
-        }
-    },40);
-}
-
-function openWelcomeWindow(){
-    const username=settings.username||"User";
-
-    createWindow("Welcome",`
-    <div class="welcome-box">
-        <h2>Welcome, ${username} 🍿</h2>
-        <p>Popcorn OS is ready to use.</p>
-        <p>Use <strong>Popcorn Store</strong> to install apps.</p>
-    </div>
-    `,460,280);
-}
-
-function resetSetup(){
-    localStorage.removeItem("popcornos_settings");
-    window.location.href="setup.html";
+    createWindow("Notes","<textarea style='width:100%;height:100%'></textarea>");
 }
 </script>
 
