@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Popcorn OS</title>
+
 <style>
 * { box-sizing: border-box; margin:0; padding:0; font-family: Arial,sans-serif; user-select: none; }
 
-/* ✅ FIXED CURSOR (hotspot added + safer path) */
+/* ✅ FIXED CURSOR */
 body {
     width:100vw;
     height:100vh;
@@ -31,7 +32,7 @@ body {
 .taskbar-btn:hover { background: rgba(255,255,255,0.18);}
 #clock { margin-left:auto; color:white; font-size:14px; padding-right:10px;}
 
-/* ✅ RESIZABLE WINDOWS ADDED */
+/* ✅ RESIZE ADDED */
 .window {
     position:absolute;
     width:750px;
@@ -39,22 +40,21 @@ body {
     background:rgba(24,24,24,0.97);
     border:1px solid rgba(255,255,255,0.08);
     border-radius:18px;
-    overflow:hidden;
     box-shadow:0 18px 50px rgba(0,0,0,0.45);
     z-index:100;
 
-    resize: both;          /* ✅ enables scaling */
-    min-width: 320px;      /* prevents breaking */
-    min-height: 220px;
+    resize: both;
+    overflow: hidden;
+
+    min-width:320px;
+    min-height:220px;
 }
 
 .titlebar { height:42px;background:rgba(255,255,255,0.07); display:flex;align-items:center;justify-content:space-between; padding:0 12px; color:white; cursor:move; border-bottom:1px solid rgba(255,255,255,0.06);}
-.titlebar span{font-size:14px;font-weight:bold;}
 .window-controls { display:flex; gap:8px; }
-.window-controls button { width:28px;height:28px;border:none;border-radius:10px;cursor:pointer;color:white;background:rgba(255,255,255,0.1); transition:0.15s;}
+.window-controls button { width:28px;height:28px;border:none;border-radius:10px;cursor:pointer;color:white;background:rgba(255,255,255,0.1); }
 .window-controls button:hover { background: rgba(255,255,255,0.18); }
 
-/* ✅ ensures resize behaves properly */
 .window-content {
     width:100%;
     height:calc(100% - 42px);
@@ -64,29 +64,26 @@ body {
     padding:16px;
 }
 
-/* ✅ iframe resize fix */
-iframe {
-    width:100%;
-    height:100%;
-    border:none;
-    background:white;
-    border-radius:0 0 18px 18px;
-}
+iframe { width:100%; height:100%; border:none; background:white; }
 
 .store-section { display:flex; flex-direction:column; gap:12px; max-width:560px;}
-.store-section h2 { font-size:28px; }
 .app-list { margin-top:16px; display:flex; flex-direction:column; gap:10px;}
-.app-card { background:#1b1b1b;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;color:white;border:1px solid rgba(255,255,255,0.05);}
-.app-card-left { display:flex;align-items:center;gap:12px; max-width:75%; }
-.app-card-left img { width:42px;height:42px;border-radius:10px;object-fit:cover; }
-.small-btn { background:crimson;border:none;color:white;padding:8px 12px;border-radius:10px;cursor:pointer;transition:0.15s; }
-.small-btn:hover { opacity:0.9; }
+
+.app-card {
+    background:#1b1b1b;
+    border-radius:14px;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.small-btn { background:crimson;border:none;color:white;padding:8px 12px;border-radius:10px;cursor:pointer; }
 
 textarea.notes-area { width:100%; height:100%; background:#111;color:white;border:none;resize:none;padding:12px;font-size:15px;outline:none; }
-.welcome-box { line-height:1.9; }
-.welcome-box h2 { margin-bottom:8px; }
 </style>
 </head>
+
 <body>
 
 <div id="desktop"></div>
@@ -99,7 +96,6 @@ textarea.notes-area { width:100%; height:100%; background:#111;color:white;borde
 </div>
 
 <script>
-/* 🔥 YOUR ORIGINAL JS — 100% UNCHANGED */
 const settings = JSON.parse(localStorage.getItem("popcornos_settings") || "{}");
 if(!settings.setupDone){ window.location.href="setup.html"; }
 
@@ -107,24 +103,71 @@ let zIndexCounter = 100;
 const desktop = document.getElementById("desktop");
 
 const defaultApps = [
-    { id:"store", name:"Popcorn Store", icon:"https://cdn-icons-png.flaticon.com/512/891/891462.png", type:"system", x:20, y:20 },
-    { id:"notes", name:"Kernel Notes", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828919.png", type:"system", x:20, y:130 }
+    { id:"store", name:"Popcorn Store", icon:"https://cdn-icons-png.flaticon.com/512/891/891462.png", x:20, y:20 },
+    { id:"notes", name:"Kernel Notes", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828919.png", x:20, y:130 }
 ];
 
-const preloadedApps = [
-    { id:"gn-math", name:"GN-Math", url:"https://ubpro.vercel.app/https:/gn-math.dev", icon:"https://cdn-icons-png.flaticon.com/512/1040/1040257.png" },
-    { id:"archix-ubg", name:"Archix-UBG", url:"https://ubpro.vercel.app/https:/archix-ubg.github.io/archixubg-site/", icon:"https://cdn-icons-png.flaticon.com/512/1051/1051279.png" },
-    { id:"indexmath-v2", name:"Indexmath-v2", url:"https://indexmath-v2.netlify.app", icon:"https://cdn-icons-png.flaticon.com/512/1051/1051266.png" },
-    { id:"breakium", name:"Breakium", url:"https://breakium.netlify.app", icon:"https://cdn-icons-png.flaticon.com/512/1052/1052100.png" },
-    { id:"fyinx", name:"Fyinx", url:"https://ubpro.vercel.app/https:/fyinx.wtf/", icon:"https://cdn-icons-png.flaticon.com/512/1053/1053021.png" }
-];
+function renderDesktopIcons(){
+    desktop.innerHTML="";
+    defaultApps.forEach((app,index)=>{
+        const icon=document.createElement("div");
+        icon.className="icon";
+        icon.style.left=app.x+"px";
+        icon.style.top=app.y+"px";
 
-window.addEventListener("DOMContentLoaded", ()=>{
-    renderDesktopIcons(); updateClock(); setInterval(updateClock,1000);
-    setTimeout(openWelcomeWindow,450);
-});
+        icon.innerHTML=`<img src="${app.icon}"><span>${app.name}</span>`;
 
-/* rest unchanged */
+        icon.ondblclick=()=>{
+            if(app.id==="store") openStore();
+            if(app.id==="notes") openNotes();
+        };
+
+        desktop.appendChild(icon);
+    });
+}
+
+function createWindow(title,content,width=600,height=400){
+    const win=document.createElement("div");
+    win.className="window";
+    win.style.left="150px";
+    win.style.top="80px";
+
+    win.innerHTML=`
+    <div class="titlebar">
+        <span>${title}</span>
+        <div class="window-controls">
+            <button onclick="this.closest('.window').remove()">✕</button>
+        </div>
+    </div>
+    <div class="window-content">${content}</div>
+    `;
+
+    desktop.appendChild(win);
+}
+
+function openStore(){
+    createWindow("Store","<h2>Store works 🍿</h2>");
+}
+
+function openNotes(){
+    createWindow("Notes","<textarea class='notes-area'></textarea>");
+}
+
+function resetSetup(){
+    localStorage.clear();
+    location.reload();
+}
+
+function updateClock(){
+    const clock=document.getElementById("clock");
+    const now=new Date();
+    clock.textContent=now.toLocaleTimeString();
+}
+
+setInterval(updateClock,1000);
+updateClock();
+renderDesktopIcons();
 </script>
+
 </body>
 </html>
